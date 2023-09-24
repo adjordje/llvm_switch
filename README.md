@@ -37,10 +37,15 @@ Tumacimo je na sledeci nacin:
 
 Koristi treci registar (ovo nisu pravi registri, vec virtuelni LLVM registri):
 > poredi case-ove sa trecim virtuelnim registrom
+> 
 > ukoliko se ne izvrsi ni jedan skok, skoci na labelu 16
+>
 > ukoliko je vrednost 1000, skoci na labelu 4
+>
 > ukoliko je vrednost 1000, skoci na labelu 7
+>
 > ukoliko je vrednost 1000, skoci na labelu 10
+>
 > ukoliko je vrednost 1000, skoci na labelu 13
 
 ### skokovi na %4, %7 i %10 bi svi skocili nazad na labelu %19 (koristeci br instrukciju)

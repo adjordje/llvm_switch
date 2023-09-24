@@ -12,10 +12,15 @@ Pre toga smo duzni da ga prebacimo u ljudski citljivu IR reprezentaciju (.ll) il
 Prebacicemo je u .ll:
 clang++ -emit-llvm test.cpp -O0 -S -Xclang -disable-O0-optnone
 > (clang++) komanda da pokrene Clang C++ kompajler
+> 
 > (-emit-llvm) instrukcija kojom LLVM pravi IR kod umesto masinskog koda
+> 
 > (test.cpp) input fajl koji zelimo da kompajliramo
-> (-O0) podesavanje optimizacija na nivo nula (bez optimizacija) 
+> 
+> (-O0) podesavanje optimizacija na nivo nula (bez optimizacija)
+> 
 > (-S) generisanje .ll umesto .bc
+> 
 > (-Xclang -disable-O0-optnone) ovaj argument je specifican za clang jer onemogucava optimizacijski pass cak iako je nivo vec namesten na nulu. Jer clang zapravo zadrzava pojedine optimizacijske pass-ove na nivou nula za svrhe debagovanja
 
 U sustini, ova komanda kompajlira test.cpp koristeci Clang C++ kompajler, generise LLVM IR kod bez bilo kakvih optimizacija, i smesti ih u test.ll
@@ -106,10 +111,12 @@ Na IR nivou, nasa transformacija bi trebalo da daje ovakav rezultat.
 ![d8](https://github.com/adjordje/llvm_switch/assets/126694198/fbc9be24-7dbe-4e42-a56e-b036900c9d18)
 Potrebne promenljive/informacije su:
 >  Nasa incijalna vrednost koju poredimo (input)
+> 
 > Destinacioni blok default grane
 
 + Za svaki `case`:
 > Vrednost slucaja sa kojim poredimo inicijalnu vrednost
+> 
 > Destinacioni blok case grane
 ## D) Implementacija
 

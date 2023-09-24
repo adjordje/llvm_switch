@@ -127,7 +127,7 @@ Potrebne promenljive/informacije su:
 ## D) Implementacija
 
 ### Koraci za implementaciju:
-- prvi prolaz: U pravom prolazu cemo proci kroz celoukupni Modul, i pokupiti sva pojavljivanja SwitchInst (switch instrukcija)
+- prvi prolaz: U prvom prolazu cemo proci kroz celoukupni Modul, i pokupiti sva pojavljivanja SwitchInst (switch instrukcija)
 - drugi prolaz: U drugom prolazu cemo generisati kod, `icmp` (Integer Comparison) instrukciju za poredjenje vrednosti, `br` (Branch) instrukciju kako bismo preusmerili kontrolu toka na odgovarajuce blokove, ove instrukcije cemo umetnuti na pocetku bloka nasih `switch` instrukcija
 - treci prolaz: U trecem prolazu cemo obrisati nase `switch` instrukcije
 

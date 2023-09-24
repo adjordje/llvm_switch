@@ -1,5 +1,6 @@
 # Konstrukcija kompilatora
-## zamena switch instrukcija grananjem (lowerswitch)
+
+## Zamena switch instrukcija grananjem (lowerswitch)
 ### mi19108, mi19255
 
 Pocinjemo sa test fajlom (test.cpp):
@@ -132,4 +133,4 @@ Potrebne promenljive/informacije su:
 
 
 Repozitorijum projekta:
-https://github.com/adjordje
+https://github.com/adjordje/llvm_switch

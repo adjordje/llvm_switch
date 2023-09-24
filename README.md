@@ -105,7 +105,7 @@ Koja se pokrene za svaku switch instrukciju kroz koju prodje visit() funkcija.
 
 ***
 ### 2 - Analiza
-Svake `case` u switch instrukciji se sastoji od konstantne vrednosti i bloka koji preuzima kontrolu toka ukoliko je vrednost koja se ispituje ista kao i vrednost za taj slucaj. Default case takodje postoji, i u slucaju da se ne izvrsi ni jedan skok, skace se na blok iz default grane.
+Svaki `case` u switch instrukciji se sastoji od konstantne vrednosti i bloka koji preuzima kontrolu toka ukoliko je vrednost koja se ispituje ista kao i vrednost za taj slucaj. Default case takodje postoji, i u slucaju da se ne izvrsi ni jedan skok, skace se na blok iz default grane.
 ***
 
 

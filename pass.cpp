@@ -1,9 +1,9 @@
+#include "llvm/Pass.h"
 #include "llvm/Demangle/Demangle.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/InstVisitor.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Module.h"
-#include "llvm/Pass.h"
 #include "llvm/Support/raw_ostream.h"
 #include <fstream>
 #include <iostream>
@@ -20,6 +20,7 @@
 #include <system_error>
 #include <utility>
 #include <vector>
+
 ////////////////////////////
 //_________BOJE___________//
 #define COL_NME "\x1B[31m" //
@@ -64,94 +65,95 @@ public:
 
   void visitSwitchInst(SwitchInst &SI) { switches.push_back(&SI); }
 
+  void removeSwitches() {
+    for (int i = 0; i < switches.size(); i++) {
+      switches[i]->removeFromParent();
+    }
+  }
 
-void removeSwitches() {
-  for (int i = 0; i < switches.size(); i++) {
-        // switches[i]->removeFromParent();
-      }
-}
+  void transformSwitches(Module *module) {
+    for (auto &function : module->functions()) {
+      for (auto &basicBlock : function) {
+        for (auto &instruction : basicBlock) {
+          if (auto *switchInst =
+                  llvm::dyn_cast<llvm::SwitchInst>(&instruction)) {
+            llvm::Value *condition = switchInst->getCondition();
+            llvm::BasicBlock *defaultBlock = switchInst->getDefaultDest();
+            std::vector<llvm::BasicBlock *> caseBlocks;
+            std::vector<llvm::ConstantInt *> caseValues;
 
-void transformSwitches(Module* module) {
-  for (auto &function : module->functions()) {
-    for (auto &basicBlock : function) {
-      for (auto &instruction : basicBlock) {
-        if (auto *switchInst = llvm::dyn_cast<llvm::SwitchInst>(&instruction)) {
-          llvm::Value *condition = switchInst->getCondition();
-          llvm::BasicBlock *defaultBlock = switchInst->getDefaultDest();
-          std::vector<llvm::BasicBlock *> caseBlocks;
-          std::vector<llvm::ConstantInt *> caseValues;
+            // Collect the case blocks and values
+            for (auto &caseIt : switchInst->cases()) {
+              caseBlocks.push_back(caseIt.getCaseSuccessor());
+              caseValues.push_back(caseIt.getCaseValue());
+            }
 
-          // Collect the case blocks and values
-          for (auto &caseIt : switchInst->cases()) {
-            caseBlocks.push_back(caseIt.getCaseSuccessor());
-            caseValues.push_back(caseIt.getCaseValue());
+            // Create the new basic blocks
+            llvm::BasicBlock *mergeBlock = llvm::BasicBlock::Create(
+                module->getContext(), "merge", &function);
+            std::vector<llvm::BasicBlock *> branchBlocks(
+                caseBlocks.size(),
+                llvm::BasicBlock::Create(module->getContext(), "branch",
+                                         &function));
+
+            // Create the branch instructions
+            llvm::IRBuilder<> builder(switchInst);
+            for (size_t i = 0; i < caseBlocks.size(); i++) {
+              llvm::Value *cmp = builder.CreateICmpEQ(condition, caseValues[i]);
+              builder.CreateCondBr(cmp, caseBlocks[i], branchBlocks[i]);
+            }
+
+            // Create the default branch
+            builder.SetInsertPoint(switchInst);
+            builder.CreateBr(defaultBlock);
+
+            // Remove the original switch instruction
+           /*  switchInst->eraseFromParent(); */
+
+            // Update the branch blocks to point to the merge block
+            for (auto *branchBlock : branchBlocks) {
+              builder.SetInsertPoint(branchBlock);
+              builder.CreateBr(mergeBlock);
+            }
+
+            // Set the insert point to the merge block
+            builder.SetInsertPoint(mergeBlock);
           }
-
-          // Create the new basic blocks
-          llvm::BasicBlock *mergeBlock = llvm::BasicBlock::Create(
-              module->getContext(), "merge", &function);
-          std::vector<llvm::BasicBlock *> branchBlocks(
-              caseBlocks.size(), llvm::BasicBlock::Create(module->getContext(),
-                                                          "branch", &function));
-
-          // Create the branch instructions
-          llvm::IRBuilder<> builder(switchInst);
-          for (size_t i = 0; i < caseBlocks.size(); i++) {
-            llvm::Value *cmp = builder.CreateICmpEQ(condition, caseValues[i]);
-            builder.CreateCondBr(cmp, caseBlocks[i], branchBlocks[i]);
-          }
-
-          // Create the default branch
-          builder.SetInsertPoint(switchInst);
-          builder.CreateBr(defaultBlock);
-
-          // Remove the original switch instruction
-          /*  switchInst->eraseFromParent(); */
-
-          // Update the branch blocks to point to the merge block
-          for (auto *branchBlock : branchBlocks) {
-            builder.SetInsertPoint(branchBlock);
-            builder.CreateBr(mergeBlock);
-          }
-
-          // Set the insert point to the merge block
-          builder.SetInsertPoint(mergeBlock);
         }
       }
     }
   }
-}
-bool doFinalization(Module &M) override {
-  // Perform finalization operations after all functions have been processed
-  LOG(COL_NME << "========================" << COL_CLR, 2);
-  LOG(switches.size() << " switch statements left to branch out", 5);
-  transformSwitches(&M);
-  removeSwitches();
-  writeModuleToFile(&M, "switchless.ll");
-  return true;
-}
-
-void writeModuleToFile(llvm::Module *module, const std::string &filename) {
-  // Open the file for writing.
-  std::error_code EC;
-  llvm::raw_fd_ostream outputFile(filename, EC);
-
-  if (EC) {
-    llvm::errs() << "Error opening file: " << EC.message() << "\n";
-    return;
+  bool doFinalization(Module &M) override {
+    // Perform finalization operations after all functions have been processed
+    LOG(COL_NME << "========================" << COL_CLR, 2);
+    LOG(switches.size() << " switch statements left to branch out", 5);
+    transformSwitches(&M);
+    removeSwitches();
+    writeModuleToFile(&M, "switchless.ll");
+    return true;
   }
 
-  // Write the LLVM IR to the file.
-  module->print(outputFile, nullptr);
+  void writeModuleToFile(llvm::Module *module, const std::string &filename) {
+    // Open the file for writing.
+    std::error_code EC;
+    llvm::raw_fd_ostream outputFile(filename, EC);
 
-  // Flush and close the file.
-  outputFile.flush();
-  outputFile.close();
+    if (EC) {
+      llvm::errs() << "Error opening file: " << EC.message() << "\n";
+      return;
+    }
 
-  if (outputFile.has_error()) {
-    llvm::errs() << "Error writing to file: " << EC.message() << "\n";
+    // Write the LLVM IR to the file.
+    module->print(outputFile, nullptr);
+
+    // Flush and close the file.
+    outputFile.flush();
+    outputFile.close();
+
+    if (outputFile.has_error()) {
+      llvm::errs() << "Error writing to file: " << EC.message() << "\n";
+    }
   }
-}
 };
 } // end anonymous namespace
 

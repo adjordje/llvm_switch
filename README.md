@@ -132,5 +132,18 @@ Potrebne promenljive/informacije su:
 - treci prolaz: U trecem prolazu cemo obrisati nase `switch` instrukcije
 
 
+### rezultat
+
+> Sa leve strane mozemo uociti da medjureprezentacija bez optimizacijskog pass-a [-switchifelse] -> test.ll 
+> 
+> i IR kod generisan sa optimizacijskim passom [-switchifelse] -> switchless.ll
+>
+> pravi razliku u tome sto ne koristi switch instrukcije (SwitchInst)
+
+![image](https://github.com/adjordje/llvm_switch/assets/126694198/23d4a0eb-7e29-4e31-9ee0-10a31bac7e81)
+
+
+
+
 Repozitorijum projekta:
 https://github.com/adjordje/llvm_switch

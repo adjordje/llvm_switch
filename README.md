@@ -131,8 +131,8 @@ Potrebne promenljive/informacije su:
 - drugi prolaz: U drugom prolazu cemo generisati kod, `icmp` (Integer Comparison) instrukciju za poredjenje vrednosti, `br` (Branch) instrukciju kako bismo preusmerili kontrolu toka na odgovarajuce blokove, ove instrukcije cemo umetnuti na pocetku bloka nasih `switch` instrukcija
 - treci prolaz: U trecem prolazu cemo obrisati nase `switch` instrukcije
 
-
-### rezultat
+***
+## rezultat
 
 > Sa leve strane mozemo uociti da medjureprezentacija bez optimizacijskog pass-a [-switchifelse] -> test.ll 
 > 

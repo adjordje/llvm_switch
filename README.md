@@ -140,7 +140,7 @@ Potrebne promenljive/informacije su:
 >
 > pravi razliku u tome sto ne koristi switch instrukcije (SwitchInst)
 
-![image](https://github.com/adjordje/llvm_switch/assets/126694198/23d4a0eb-7e29-4e31-9ee0-10a31bac7e81)
+![image](https://github.com/adjordje/llvm_switch/assets/126694198/daef1538-2e3f-4db4-81fa-f95b6dbfcb8c)
 
 
 
